@@ -13,63 +13,47 @@ ENV LD_PRELOAD="/usr/lib/x86_64-linux-gnu/libtcmalloc_minimal.so.4"
 # Ne írjon .pyc fájlokat a lemezre futás közben (tárhely spórolás)
 ENV PYTHONDONTWRITEBYTECODE=1
 
-# Rendszerfüggőségek telepítése
+RUN mkdir -p ${COMFYUI_DIR}
+WORKDIR ${COMFYUI_DIR}
+
 RUN set -e \
     && apt-get update \
     && apt-get install -y --no-install-recommends \
+		git \
 		git-lfs \
 		google-perftools \
 		libgl1 \
 		libglib2.0-0 \
+		libgoogle-perftools-dev \
 		libtcmalloc-minimal4 \
 		wget \
-        git \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* \
-    && mkdir -p ${COMFYUI_DIR}
-
-WORKDIR ${COMFYUI_DIR}
-
-ENV VIRTUAL_ENV="${COMFYUI_DIR}/venv"
-ENV PATH="$VIRTUAL_ENV/bin:$PATH"
-
-# Alkalmazás telepítése egyetlen hatalmas, optimalizált rétegben
-RUN set -e \
-    # ELŐSZÖR a ComfyUI klónozása (mivel a '.' célkönyvtárnak üresnek kell lennie)
-    && git clone --depth 1 --branch master --single-branch "https://github.com/comfyanonymous/ComfyUI.git" . \
-    \
-    # UTÁNA a Venv létrehozása a már meglévő (klónozott) mappába
-    && python3 -m venv ${VIRTUAL_ENV} \
-    && pip install --no-cache-dir --upgrade pip \
-    \
-    # Custom node-ok klónozása
-    #&& mkdir -p ${COMFYUI_MANAGER_DIR} \
-    #&& git clone --depth 1 --branch main --single-branch "https://github.com/Comfy-Org/ComfyUI-Manager.git" ${COMFYUI_MANAGER_DIR} \
-    #&& mkdir -p ${COMFYUI_MEMORY_CLEANUP_DIR} \
-    #&& git clone --depth 1 --branch main --single-branch "https://github.com/LAOGOU-666/Comfyui-Memory_Cleanup.git" ${COMFYUI_MEMORY_CLEANUP_DIR} \
-    \
-    # PyTorch és Xformers telepítése
-    && pip install --pre --no-cache-dir \
+    && git clone --branch master --single-branch "https://github.com/comfyanonymous/ComfyUI.git" ${COMFYUI_DIR} \
+	&& mkdir -p ${COMFYUI_MANAGER_DIR} \
+		&& git clone --branch main --single-branch "https://github.com/Comfy-Org/ComfyUI-Manager.git" ${COMFYUI_MANAGER_DIR} \
+	&& mkdir -p ${COMFYUI_MEMORY_CLEANUP_DIR} \
+		&& git clone --branch main --single-branch "https://github.com/LAOGOU-666/Comfyui-Memory_Cleanup.git" ${COMFYUI_MEMORY_CLEANUP_DIR} \
+	&& pip install --upgrade pip \
+    && pip install --pre --upgrade --no-cache-dir \
 		torch \
 		torchaudio \
 		torchvision \
-    		--index-url "https://download.pytorch.org/whl/nightly/cu132" \
+    		--extra-index-url "https://download.pytorch.org/whl/nightly/cu132" \
 			--prefer-binary \
-    && pip install --pre --no-cache-dir \
+    && pip install --pre --upgrade --no-cache-dir \
         xformers \
-        	--index-url "https://download.pytorch.org/whl/nightly/cu132" \
+        	--extra-index-url "https://download.pytorch.org/whl/nightly/cu132" \
 			--prefer-binary \
-    \
-    # Függőségek telepítése
-    && pip install --no-cache-dir -r requirements.txt \
-    #&& pip install --no-cache-dir -r "${COMFYUI_MANAGER_DIR}/requirements.txt" \
-    #&& pip install --no-cache-dir -r "${COMFYUI_MEMORY_CLEANUP_DIR}/requirements.txt" \
-    \
+    && pip install -r "${COMFYUI_DIR}/requirements.txt" \
+	&& pip install -r "${COMFYUI_MANAGER_DIR}/requirements.txt" \
+	&& pip install -r "${COMFYUI_MEMORY_CLEANUP_DIR}/requirements.txt" \
     # Felesleges fájlok agresszív törlése a rétegből
-    && find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
+    && find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true \
+	### Cleanup
+	&& apt-get clean \
+	&& rm -rf /var/lib/apt/lists/*
 
 COPY docker-entrypoint.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 ENTRYPOINT ["docker-entrypoint.sh"]
 
-CMD ["python3", "./main.py", "--listen", "0.0.0.0", "--preview-method", "auto", "--cache-none"]
+# https://github.com/comfyanonymous/ComfyUI/blob/master/comfy/cli_args.py
+CMD ["python3", "./main.py", "--listen", "--preview-method", "auto", "--cache-none"]
