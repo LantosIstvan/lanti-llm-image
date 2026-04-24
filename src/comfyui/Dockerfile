@@ -35,8 +35,8 @@ RUN set -e \
 	&& pip install --upgrade pip \
     && pip install --pre --upgrade --no-cache-dir \
 		torch==2.11.0 \
-		torchaudio==2.11 \
-		torchvision==0.25 \
+		torchaudio==2.11.0 \
+		torchvision==0.27.0 \
     		--extra-index-url "https://download.pytorch.org/whl/nightly/cu132" \
 			--prefer-binary \
     && pip install --pre --upgrade --no-cache-dir \
