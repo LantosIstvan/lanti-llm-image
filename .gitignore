@@ -1,0 +1,8 @@
+.env
+repomix-output-llm.md
+
+/models/**
+/outputs/**
+
+!/models/**/.gitkeep
+!/outputs/**/.gitkeep

@@ -1,0 +1,4 @@
+# ollama rm gemma3-custom
+
+# Define the base model we are customizing
+FROM gemma3:4b

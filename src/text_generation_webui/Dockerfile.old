@@ -1,0 +1,55 @@
+ARG VERSION_PYTHON
+FROM python:${VERSION_PYTHON}
+
+LABEL maintainer="lantosistvan89@gmail.com"
+
+ARG TGWUI_DIR
+ARG TGWUI_MODELS
+ENV TGWUI_MODELS=${TGWUI_MODELS}
+ENV NODE_ENV="production"
+# This is needed to avoid an error about "Failed to build mpi4py" (TensorRT-LLM)
+ENV LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
+
+RUN mkdir -p ${TGWUI_DIR} ${TGWUI_MODELS}
+WORKDIR ${TGWUI_DIR}
+
+RUN set -e \
+	&& apt update \
+	&& apt install -y --no-install-recommends \
+		git \
+		git-lfs \
+		google-perftools \
+		libgl1 \
+		libglib2.0-0 \
+		libgoogle-perftools-dev \
+		libtcmalloc-minimal4 \
+		wget \
+		# TensorRT-LLM requirements
+		libopenmpi-dev \
+		openmpi-bin \
+	&& git clone --branch main --single-branch "https://github.com/oobabooga/text-generation-webui.git" ${TGWUI_DIR} \
+	&& pip install --upgrade pip \
+	&& pip install \
+		torch==2.7.1 \
+		torchaudio==2.7.1 \
+		torchvision==0.22.1 \
+			--index-url "https://download.pytorch.org/whl/cu128" \
+			--prefer-binary \
+	&& pip install \
+		xformers==0.0.31 \
+			--index-url "https://download.pytorch.org/whl/cu128" \
+			--prefer-binary \
+	&& pip install -r "${TGWUI_DIR}/requirements/full/requirements_cuda128.txt" \
+	# Version mismatch
+	# && pip install \
+	# 	-r "${TGWUI_DIR}/requirements/full/requirements_cuda128.txt" \
+	# 	tensorrt_llm==0.20.0 \
+	# 		--extra-index-url "https://pypi.nvidia.com" \
+	# 		--prefer-binary \
+	### Cleanup
+	&& rm -rf /var/lib/apt/lists/*
+
+COPY docker-entrypoint.sh /usr/local/bin/
+ENTRYPOINT ["docker-entrypoint.sh"]
+
+CMD ["python3", "./server.py", "--api", "--listen", "--model-dir", "${TGWUI_MODELS}"]

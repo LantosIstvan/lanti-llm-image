@@ -1,0 +1,35 @@
+#!/bin/sh
+set -e
+
+# Start ollama serve in the background
+ollama serve &
+pid=$!
+
+# Wait for the server to be up and running
+# while ! curl -s -f http://localhost:11434/api/tags > /dev/null; do
+# 	echo "Waiting for Ollama server to be ready..."
+# 	sleep 1
+# done
+
+# Wait for the server to be up and running by polling with "ollama list"
+# Redirect output to /dev/null to keep the logs clean
+while ! ollama list >/dev/null 2>&1; do
+	echo "Waiting for Ollama server to be ready..."
+	sleep 1
+done
+
+# Check if the OLLAMA_PULL_MODEL variable is set and not empty
+if [ -n "$OLLAMA_PULL_MODEL" ]; then
+	# Check if the model exists
+	if ! ollama list | grep -q "$OLLAMA_PULL_MODEL"; then
+		echo "Model '$OLLAMA_PULL_MODEL' not found. Pulling it..."
+		ollama pull "$OLLAMA_PULL_MODEL"
+	else
+		echo "Model '$OLLAMA_PULL_MODEL' already exists."
+	fi
+else
+	echo "OLLAMA_PULL_MODEL is not set. Skipping initial model pull."
+fi
+
+# Wait for the ollama serve process to exit
+wait $pid

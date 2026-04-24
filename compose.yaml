@@ -1,0 +1,234 @@
+name: lanti_llm_docker
+
+networks:
+  backend:
+    driver: bridge
+  frontend:
+    driver: bridge
+
+secrets:
+  # /run/secrets/huggingface_token
+  huggingface_token:
+    environment: "HUGGING_FACE_HUB_TOKEN"
+
+volumes:
+  comfyui_user:
+  ollama:
+  open_webui:
+  sd_models:
+  sd_repositories:
+  searxng_data:
+  searxng:
+  tgwui_user:
+
+# https://docs.docker.com/compose/how-tos/gpu-support/
+# https://docs.nvidia.com/ai-workbench/user-guide/latest/reference/projects/compose-reference.html#gpu-allocation-by-count
+x-common-gpu: &common-gpu
+  deploy:
+    resources:
+      reservations:
+        devices:
+          - driver: nvidia
+            count: all
+            capabilities: [gpu]
+
+x-common-logging: &common-logging
+  logging:
+    driver: "json-file"
+    options:
+      max-size: "1m"
+      max-file: "1"
+
+services:
+
+  # cache_debian:
+  #   image: debian:${VERSION_DEBIAN-latest}
+  #   profiles:
+  #     - cache
+  # cache_ollama:
+  #   image: ollama/ollama:${VERSION_OLLAMA-latest}
+  #   profiles:
+  #     - cache
+  # cache_python312:
+  #   image: python:${VERSION_PYTHON312}
+  #   profiles:
+  #     - cache
+
+  # cache_python311:
+  #   image: python:${VERSION_PYTHON311}
+  #   profiles:
+  #     - cache
+  cache_python312:
+    image: python:${VERSION_PYTHON312}
+    profiles:
+      - cache
+  cache_python313:
+    image: python:${VERSION_PYTHON313}
+    profiles:
+      - cache
+
+  ollama:
+    build:
+      context: ./src/ollama
+      args:
+        VERSION_OLLAMA: ${VERSION_OLLAMA-latest}
+    volumes:
+      - ollama:/root/.ollama
+      - ./src/ollama/modelfiles:/modelfiles:ro
+    ports:
+      - 11434:11434
+    environment:
+      - OLLAMA_KEEP_ALIVE=5s
+      - OLLAMA_NOHISTORY=true
+      # - OLLAMA_PULL_MODEL=${OLLAMA_PULL_MODEL:-deepseek-r1:8b}
+      - TZ=${TIMEZONE}
+    <<: [ *common-gpu ]
+    networks:
+      - backend
+    profiles:
+      - app
+
+  playwright:
+    image: mcr.microsoft.com/playwright:v${VERSION_PLAYWRIGHT}-noble # Version must match requirements.txt
+    command: npx -y playwright@${VERSION_PLAYWRIGHT} run-server --port 3000 --host 0.0.0.0
+    environment:
+      - TZ=${TIMEZONE}
+    ports:
+      - 3000:3000
+    networks:
+      - backend
+    profiles:
+      - app
+
+  open_webui:
+    image: ghcr.io/open-webui/open-webui:${VERSION_OPEN_WEBUI}
+    volumes:
+      - open_webui:/app/backend/data
+    environment:
+      - DEFAULT_LOCALE=en
+      - ENABLE_PERSISTENT_CONFIG=False
+      - TZ=${TIMEZONE}
+      - WEBUI_AUTH=False
+      # - DEFAULT_MODELS=${OLLAMA_PULL_MODEL:-deepseek-r1:8b}
+      ### Connections
+      - OLLAMA_BASE_URLS=http://ollama:11434
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      ### Images
+      - AUTOMATIC1111_BASE_URL=http://stable_diffusion_webui:7860
+      - ENABLE_IMAGE_GENERATION=True
+      - IMAGE_GENERATION_ENGINE=automatic1111
+      ### Web Search
+      - ENABLE_WEB_SEARCH=True
+      - GOOGLE_PSE_API_KEY=${GOOGLE_PSE_API_KEY}
+      - GOOGLE_PSE_ENGINE_ID=${GOOGLE_PSE_ENGINE_ID}
+      # - PLAYWRIGHT_WS_URL=ws://playwright:3000
+      - SEARXNG_QUERY_URL=http://searxng:3001/search?q=<query>
+      - WEB_LOADER_ENGINE=playwright
+      - WEB_SEARCH_ENGINE=google_pse
+      # - WEB_SEARCH_ENGINE=duckduckgo
+      # - WEB_SEARCH_ENGINE=searxng
+    ports:
+      - 8080:8080
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    depends_on:
+      - ollama
+      - playwright
+    networks:
+      - backend
+      - frontend
+    profiles:
+      - app
+
+  searxng:
+    image: searxng/searxng:${VERSION_SEARXNG-latest}
+    ports:
+      - 3001:8080
+    volumes:
+      - searxng:/etc/searxng
+      - searxng_data:/var/cache/searxng
+    environment:
+      - TZ=${TIMEZONE}
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
+      - DAC_OVERRIDE
+    <<: [ *common-logging ]
+    networks:
+      - backend
+    profiles:
+      - searxng
+
+  stable_diffusion_webui:
+    build:
+      context: ./src/stable_diffusion_webui
+      args:
+        GID: ${GID}
+        UID: ${UID}
+        VERSION_DEBIAN: ${VERSION_DEBIAN}
+    environment:
+      - TZ=${TIMEZONE}
+    secrets:
+       - huggingface_token
+    volumes:
+      - ./outputs:/usr/src/webui/outputs
+      - sd_models:/usr/src/webui/models
+      - sd_repositories:/usr/src/webui/repositories
+    ports:
+      - 7860:7860
+    <<: [ *common-gpu ]
+    networks:
+      - backend
+    profiles:
+      - a1111
+
+  text_generation_webui:
+    build:
+      context: ./src/text_generation_webui
+      args:
+        TGWUI_DIR: ${TGWUI_DIR}
+        VERSION_PYTHON: ${VERSION_PYTHON312}
+    environment:
+      - TZ=${TIMEZONE}
+    secrets:
+       - huggingface_token
+    volumes:
+      - ./models_tgwui:/usr/src/models
+      - tgwui_user:${TGWUI_DIR}/user_data
+    ports:
+      - 5000:5000
+      - 7860:7860
+    <<: [ *common-gpu ]
+    networks:
+      - backend
+      - frontend
+    profiles:
+      - text_generation_webui
+
+  comfyui:
+    build:
+      context: ./src/comfyui
+      args:
+        COMFYUI_DIR: ${COMFYUI_DIR}
+        VERSION_PYTHON: ${VERSION_PYTHON312}
+    environment:
+      - TZ=${TIMEZONE}
+    volumes:
+      - ./models/diffusion_models/wan2.2_ti2v_5B_fp16.safetensors:${COMFYUI_DIR}/models/diffusion_models/wan2.2_ti2v_5B_fp16.safetensors:ro
+      - ./models/text_encoders/umt5_xxl_fp16.safetensors:${COMFYUI_DIR}/models/text_encoders/umt5_xxl_fp16.safetensors:ro
+      - ./models/text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors:${COMFYUI_DIR}/models/text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors:ro
+      - ./models/vae/wan_2.1_vae.safetensors:${COMFYUI_DIR}/models/vae/wan_2.1_vae.safetensors:ro
+      - ./models/vae/wan2.2_vae.safetensors:${COMFYUI_DIR}/models/vae/wan2.2_vae.safetensors:ro
+      - ./outputs:${COMFYUI_DIR}/output
+      - comfyui_user:${COMFYUI_DIR}/user
+    ports:
+      - 8188:8188
+    <<: [ *common-gpu ]
+    networks:
+      - backend
+      - frontend
+    profiles:
+      - comfy
