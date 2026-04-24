@@ -69,6 +69,7 @@ RUN set -e \
     \
     # Függőségek telepítése
     && pip install --no-cache-dir -r requirements.txt \
+	&& pip install --no-cache-dir sqlalchemy alembic \
     && pip install --no-cache-dir -r "${COMFYUI_MANAGER_DIR}/requirements.txt" \
     && pip install --no-cache-dir -r "${COMFYUI_MEMORY_CLEANUP_DIR}/requirements.txt" \
     \

@@ -1,6 +1,5 @@
 .env
 repomix-output-llm.md
 
-/custom_nodes/**
 /models/**
 /outputs/**
