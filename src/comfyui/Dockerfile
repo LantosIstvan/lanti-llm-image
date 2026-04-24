@@ -34,13 +34,13 @@ RUN set -e \
 		&& git clone --branch main --single-branch "https://github.com/LAOGOU-666/Comfyui-Memory_Cleanup.git" ${COMFYUI_MEMORY_CLEANUP_DIR} \
 	&& pip install --upgrade pip \
     && pip install --pre --upgrade --no-cache-dir \
-		torch \
-		torchaudio \
-		torchvision \
+		torch==2.11.0 \
+		torchaudio==2.11 \
+		torchvision==0.25 \
     		--extra-index-url "https://download.pytorch.org/whl/nightly/cu132" \
 			--prefer-binary \
     && pip install --pre --upgrade --no-cache-dir \
-        xformers \
+        xformers==0.0.35 \
         	--extra-index-url "https://download.pytorch.org/whl/nightly/cu132" \
 			--prefer-binary \
     && pip install -r "${COMFYUI_DIR}/requirements.txt" \
