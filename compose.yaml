@@ -75,8 +75,6 @@ services:
       args:
         COMFYUI_DIR: ${COMFYUI_DIR}
         VERSION_PYTHON: ${VERSION_PYTHON313}
-        UID: ${UID}
-        GID: ${GID}
     environment:
       - TZ=${TIMEZONE}
     volumes:
