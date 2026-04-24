@@ -30,21 +30,25 @@ RUN set -e \
 
 WORKDIR ${COMFYUI_DIR}
 
-# Alkalmazás és függőségek telepítése egyetlen hatalmas, optimalizált rétegben (VENV nélkül)
+ENV VIRTUAL_ENV="${COMFYUI_DIR}/venv"
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+
+# Alkalmazás telepítése egyetlen hatalmas, optimalizált rétegben
 RUN set -e \
-    # ELŐSZÖR a ComfyUI klónozása
+    # ELŐSZÖR a ComfyUI klónozása (mivel a '.' célkönyvtárnak üresnek kell lennie)
     && git clone --depth 1 --branch master --single-branch "https://github.com/comfyanonymous/ComfyUI.git" . \
     \
-    # Pip frissítése globálisan
+    # UTÁNA a Venv létrehozása a már meglévő (klónozott) mappába
+    && python3 -m venv ${VIRTUAL_ENV} \
     && pip install --no-cache-dir --upgrade pip \
     \
     # Custom node-ok klónozása
-    && mkdir -p ${COMFYUI_MANAGER_DIR} \
-    && git clone --depth 1 --branch main --single-branch "https://github.com/Comfy-Org/ComfyUI-Manager.git" ${COMFYUI_MANAGER_DIR} \
-    && mkdir -p ${COMFYUI_MEMORY_CLEANUP_DIR} \
-    && git clone --depth 1 --branch main --single-branch "https://github.com/LAOGOU-666/Comfyui-Memory_Cleanup.git" ${COMFYUI_MEMORY_CLEANUP_DIR} \
+    #&& mkdir -p ${COMFYUI_MANAGER_DIR} \
+    #&& git clone --depth 1 --branch main --single-branch "https://github.com/Comfy-Org/ComfyUI-Manager.git" ${COMFYUI_MANAGER_DIR} \
+    #&& mkdir -p ${COMFYUI_MEMORY_CLEANUP_DIR} \
+    #&& git clone --depth 1 --branch main --single-branch "https://github.com/LAOGOU-666/Comfyui-Memory_Cleanup.git" ${COMFYUI_MEMORY_CLEANUP_DIR} \
     \
-    # PyTorch és Xformers telepítése globálisan
+    # PyTorch és Xformers telepítése
     && pip install --pre --no-cache-dir \
 		torch \
 		torchaudio \
@@ -56,11 +60,10 @@ RUN set -e \
         	--index-url "https://download.pytorch.org/whl/nightly/cu132" \
 			--prefer-binary \
     \
-    # Függőségek telepítése globálisan
+    # Függőségek telepítése
     && pip install --no-cache-dir -r requirements.txt \
-	&& pip install --no-cache-dir sqlalchemy alembic \
-    && pip install --no-cache-dir -r "${COMFYUI_MANAGER_DIR}/requirements.txt" \
-    && pip install --no-cache-dir -r "${COMFYUI_MEMORY_CLEANUP_DIR}/requirements.txt" \
+    #&& pip install --no-cache-dir -r "${COMFYUI_MANAGER_DIR}/requirements.txt" \
+    #&& pip install --no-cache-dir -r "${COMFYUI_MEMORY_CLEANUP_DIR}/requirements.txt" \
     \
     # Felesleges fájlok agresszív törlése a rétegből
     && find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
