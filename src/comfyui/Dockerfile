@@ -26,7 +26,8 @@ RUN set -e \
 		google-perftools \
 		libgl1 \
 		libglib2.0-0 \
-		libtcmalloc-minimal4 wget \
+		libtcmalloc-minimal4 \
+		wget \
         git \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
@@ -53,14 +54,16 @@ RUN set -e \
     && git clone --depth 1 --branch main --single-branch "https://github.com/LAOGOU-666/Comfyui-Memory_Cleanup.git" ${COMFYUI_MEMORY_CLEANUP_DIR} \
     \
     # PyTorch és Xformers telepítése --no-cache-dir kapcsolóval (Gigabájtokat spórol!)
-    && pip install --no-cache-dir \
-		torchaudio==2.8.0 \
-		torchvision==0.23 \
-        torch==2.8.0 \
-    		--extra-index-url "https://download.pytorch.org/whl/nightly/cu128" --prefer-binary \
-    && pip install --no-cache-dir \
-        xformers==0.0.32.post2 \
-        	--extra-index-url "https://download.pytorch.org/whl/cu128" --prefer-binary \
+    && pip install --pre --no-cache-dir \
+		torch \
+		torchaudio \
+		torchvision \
+    		--index-url "https://download.pytorch.org/whl/nightly/cu132" \
+			--prefer-binary \
+    && pip install --pre --no-cache-dir \
+        xformers \
+        	--index-url "https://download.pytorch.org/whl/nightly/cu132" \
+			--prefer-binary \
     \
     # Függőségek telepítése
     && pip install --no-cache-dir -r requirements.txt \
