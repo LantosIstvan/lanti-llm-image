@@ -79,8 +79,12 @@ services:
     environment:
       - TZ=${TIMEZONE}
     volumes:
+      - ./models/checkpoints:${COMFYUI_DIR}/models/checkpoints:ro
+      - ./models/clip_vision:${COMFYUI_DIR}/models/clip_vision:ro
+      - ./models/controlnet:${COMFYUI_DIR}/models/controlnet:ro
       - ./models/diffusion_models:${COMFYUI_DIR}/models/diffusion_models:ro
       - ./models/text_encoders:${COMFYUI_DIR}/models/text_encoders:ro
+      - ./models/upscale_models:${COMFYUI_DIR}/models/upscale_models:ro
       - ./models/vae:${COMFYUI_DIR}/models/vae:ro
       - ./outputs:${COMFYUI_DIR}/output
       - comfyui_user:${COMFYUI_DIR}/user
