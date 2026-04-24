@@ -13,6 +13,7 @@ networks:
 
 volumes:
   comfyui_user:
+  comfyui_custom_nodes:
   # sd_models:
   # sd_repositories:
 
@@ -89,7 +90,7 @@ services:
       - ./outputs:${COMFYUI_DIR}/output
       - comfyui_user:${COMFYUI_DIR}/user
       # Opcionális, de ajánlott: egy közös custom_nodes volume, hogy perzisztens legyen
-      - ./custom_nodes:${COMFYUI_DIR}/custom_nodes
+      - comfyui_custom_nodes:${COMFYUI_DIR}/custom_nodes
     ports:
       - 8188:8188
     <<: [ *common-gpu ]

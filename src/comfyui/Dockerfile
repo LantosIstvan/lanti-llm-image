@@ -42,18 +42,20 @@ ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 # Alkalmazás telepítése egyetlen hatalmas, optimalizált rétegben
 RUN set -e \
-    # Venv létrehozása
+    # ELŐSZÖR a ComfyUI klónozása (mivel a '.' célkönyvtárnak üresnek kell lennie)
+    && git clone --depth 1 --branch master --single-branch "https://github.com/comfyanonymous/ComfyUI.git" . \
+    \
+    # UTÁNA a Venv létrehozása a már meglévő (klónozott) mappába
     && python3 -m venv ${VIRTUAL_ENV} \
     && pip install --no-cache-dir --upgrade pip \
     \
-    # Git klónozások: a --depth 1 HUSZADÁRA csökkenti a letöltött git mappák méretét!
-    && git clone --depth 1 --branch master --single-branch "https://github.com/comfyanonymous/ComfyUI.git" . \
+    # Custom node-ok klónozása
     && mkdir -p ${COMFYUI_MANAGER_DIR} \
     && git clone --depth 1 --branch main --single-branch "https://github.com/Comfy-Org/ComfyUI-Manager.git" ${COMFYUI_MANAGER_DIR} \
     && mkdir -p ${COMFYUI_MEMORY_CLEANUP_DIR} \
     && git clone --depth 1 --branch main --single-branch "https://github.com/LAOGOU-666/Comfyui-Memory_Cleanup.git" ${COMFYUI_MEMORY_CLEANUP_DIR} \
     \
-    # PyTorch és Xformers telepítése --no-cache-dir kapcsolóval (Gigabájtokat spórol!)
+    # PyTorch és Xformers telepítése
     && pip install --pre --no-cache-dir \
 		torch \
 		torchaudio \
