@@ -45,5 +45,5 @@ swap=32GB
 ## Repomix
 
 ```batch
-repomix "C:\www-llm\lanti-llm-chat" --output "C:\www-llm\lanti-llm-chat\repomix-output-llm.md" --style markdown --parsable-style --include-empty-directories --ignore ".git/**,**/*.safetensors,models/**,outputs/**,.editorconfig,.env,.gitignore,repomix-output-llm.md"
+repomix "C:\www-llm\lanti-llm-image" --output "C:\www-llm\lanti-llm-image\repomix-output-llm.md" --style markdown --parsable-style --include-empty-directories --ignore ".git/**,**/*.safetensors,models/**,outputs/**,**/examples/**,.editorconfig,.env,.gitignore,repomix-output-llm.md"
 ```
