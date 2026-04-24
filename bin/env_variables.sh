@@ -1,5 +1,4 @@
 #!/bin/sh
-
 set -e
 
 # These are only used in shell scripts, don't need to export
@@ -13,5 +12,3 @@ export UID=$(id -u)
 export GID=$(id -g)
 
 set -a && . $ABS_PATH/.env && set +a
-
-TIMESTAMP=$(date '+%s')_$(date '+%Y%m%d_%H%M%S')

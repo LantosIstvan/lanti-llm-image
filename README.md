@@ -1,9 +1,9 @@
-# Lanti LLM Docker
+# lanti-llm-image
 
 ## Usage
 
 ```sh
-$ cd "/mnt/c/www-llm/lanti_llm_docker"
+$ cd "/mnt/c/www-llm/lanti-llm-image"
 $ ./bin/compose.sh bootstrap
 $ ./bin/compose.sh up
 $ ./bin/compose.sh down
@@ -11,7 +11,6 @@ $ ./bin/compose.sh down
 
 ## Web Interfaces
 
-- **LLM Web UI:** [open-webui](http://localhost:8080)
 - **Stable Diffusion Web UI:** [stable_diffusion_webui](http://localhost:7860)
 - **ComfyUI:** [comfyui](http://localhost:8188)
 
@@ -46,5 +45,5 @@ swap=32GB
 ## Repomix
 
 ```batch
-repomix "C:\www-llm\lanti_llm_docker" --output "C:\www-llm\lanti_llm_docker\repomix-output-llm.md" --style markdown --parsable-style --include-empty-directories --ignore ".git/**,**/package-lock.json,**/*.safetensors,outputs/**,.editorconfig,.env,.gitignore,repomix-output-llm.md"
+repomix "C:\www-llm\lanti-llm-chat" --output "C:\www-llm\lanti-llm-chat\repomix-output-llm.md" --style markdown --parsable-style --include-empty-directories --ignore ".git/**,**/*.safetensors,models/**,outputs/**,.editorconfig,.env,.gitignore,repomix-output-llm.md"
 ```
