@@ -36,27 +36,14 @@ x-common-logging: &common-logging
 
 services:
 
-  # cache_debian:
-  #   image: debian:${VERSION_DEBIAN-latest}
-  #   profiles:
-  #     - cache
-  # cache_ollama:
-  #   image: ollama/ollama:${VERSION_OLLAMA-latest}
-  #   profiles:
-  #     - cache
-  # cache_python312:
-  #   image: python:${VERSION_PYTHON312}
-  #   profiles:
-  #     - cache
-
   cache_python312:
     image: python:${VERSION_PYTHON312}
     profiles:
       - cache
-  cache_python313:
-    image: python:${VERSION_PYTHON313}
-    profiles:
-      - cache
+  # cache_python313:
+  #   image: python:${VERSION_PYTHON313}
+  #   profiles:
+  #     - cache
 
   # stable_diffusion_webui:
   #   build:
@@ -87,16 +74,18 @@ services:
       args:
         COMFYUI_DIR: ${COMFYUI_DIR}
         VERSION_PYTHON: ${VERSION_PYTHON312}
+        UID: ${UID}
+        GID: ${GID}
     environment:
       - TZ=${TIMEZONE}
     volumes:
-      - ./models/diffusion_models/wan2.2_ti2v_5B_fp16.safetensors:${COMFYUI_DIR}/models/diffusion_models/wan2.2_ti2v_5B_fp16.safetensors:ro
-      - ./models/text_encoders/umt5_xxl_fp16.safetensors:${COMFYUI_DIR}/models/text_encoders/umt5_xxl_fp16.safetensors:ro
-      - ./models/text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors:${COMFYUI_DIR}/models/text_encoders/umt5_xxl_fp8_e4m3fn_scaled.safetensors:ro
-      - ./models/vae/wan_2.1_vae.safetensors:${COMFYUI_DIR}/models/vae/wan_2.1_vae.safetensors:ro
-      - ./models/vae/wan2.2_vae.safetensors:${COMFYUI_DIR}/models/vae/wan2.2_vae.safetensors:ro
+      - ./models/diffusion_models:${COMFYUI_DIR}/models/diffusion_models:ro
+      - ./models/text_encoders:${COMFYUI_DIR}/models/text_encoders:ro
+      - ./models/vae:${COMFYUI_DIR}/models/vae:ro
       - ./outputs:${COMFYUI_DIR}/output
       - comfyui_user:${COMFYUI_DIR}/user
+      # Opcionális, de ajánlott: egy közös custom_nodes volume, hogy perzisztens legyen
+      - ./custom_nodes:${COMFYUI_DIR}/custom_nodes
     ports:
       - 8188:8188
     <<: [ *common-gpu ]
