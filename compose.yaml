@@ -13,7 +13,6 @@ networks:
 
 volumes:
   comfyui_user:
-  comfyui_custom_nodes:
   # sd_models:
   # sd_repositories:
 
@@ -37,10 +36,6 @@ x-common-logging: &common-logging
 
 services:
 
-  # cache_python312:
-  #   image: python:${VERSION_PYTHON312}
-  #   profiles:
-  #     - cache
   cache_python313:
     image: python:${VERSION_PYTHON313}
     profiles:
@@ -87,8 +82,6 @@ services:
       - ./models/vae:${COMFYUI_DIR}/models/vae:ro
       - ./outputs:${COMFYUI_DIR}/output
       - comfyui_user:${COMFYUI_DIR}/user
-      # Opcionális, de ajánlott: egy közös custom_nodes volume, hogy perzisztens legyen
-      - comfyui_custom_nodes:${COMFYUI_DIR}/custom_nodes
     ports:
       - 8188:8188
     <<: [ *common-gpu ]
