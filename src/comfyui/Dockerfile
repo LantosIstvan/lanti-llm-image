@@ -11,6 +11,10 @@ ENV NODE_ENV="production"
 # Ne írjon .pyc fájlokat a lemezre futás közben (tárhely spórolás)
 ENV PYTHONDONTWRITEBYTECODE=1
 
+# PIP globális beállításai
+ENV PIP_ROOT_USER_ACTION=ignore
+ENV PIP_NO_CACHE_DIR=1
+
 RUN mkdir -p ${COMFYUI_DIR}
 WORKDIR ${COMFYUI_DIR}
 
@@ -30,20 +34,20 @@ RUN set -e \
 		&& git clone --branch main --single-branch "https://github.com/Comfy-Org/ComfyUI-Manager.git" ${COMFYUI_MANAGER_DIR} \
 	&& mkdir -p ${COMFYUI_MEMORY_CLEANUP_DIR} \
 		&& git clone --branch main --single-branch "https://github.com/LAOGOU-666/Comfyui-Memory_Cleanup.git" ${COMFYUI_MEMORY_CLEANUP_DIR} \
-	&& pip install --root-user-action --upgrade pip \
-    && pip install --root-user-action --upgrade --no-cache-dir \
+	&& pip install --upgrade pip \
+    && pip install --upgrade \
 		torch \
 		torchaudio \
 		torchvision \
     		--index-url "https://download.pytorch.org/whl/cu130" \
 			--prefer-binary \
-    && pip install --root-user-action --upgrade --no-cache-dir \
+    && pip install --upgrade \
         xformers \
         	--index-url "https://download.pytorch.org/whl/cu130" \
 			--prefer-binary \
-    && pip install --root-user-action -r "${COMFYUI_DIR}/requirements.txt" \
-	&& pip install --root-user-action -r "${COMFYUI_MANAGER_DIR}/requirements.txt" \
-	&& pip install --root-user-action -r "${COMFYUI_MEMORY_CLEANUP_DIR}/requirements.txt" \
+    && pip install -r "${COMFYUI_DIR}/requirements.txt" \
+	&& pip install -r "${COMFYUI_MANAGER_DIR}/requirements.txt" \
+	&& pip install -r "${COMFYUI_MEMORY_CLEANUP_DIR}/requirements.txt" \
     # Felesleges fájlok agresszív törlése a rétegből
     && find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true \
 	### Cleanup
