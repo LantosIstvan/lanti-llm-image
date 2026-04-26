@@ -78,6 +78,7 @@ services:
       - ./models/controlnet:${COMFYUI_DIR}/models/controlnet:ro
       - ./models/diffusion_models:${COMFYUI_DIR}/models/diffusion_models:ro
       - ./models/text_encoders:${COMFYUI_DIR}/models/text_encoders:ro
+      # - ./models/SEEDVR2:${COMFYUI_DIR}/models/SEEDVR2:ro
       - ./models/upscale_models:${COMFYUI_DIR}/models/upscale_models:ro
       - ./models/vae:${COMFYUI_DIR}/models/vae:ro
       - ./outputs:${COMFYUI_DIR}/output
