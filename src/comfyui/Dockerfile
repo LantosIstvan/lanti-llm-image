@@ -41,7 +41,7 @@ RUN set -e \
 	### Workflow
 	&& mkdir -p ${COMFYUI_SEEDVR2_DIR} \
 		&& git clone --branch main --single-branch "https://github.com/numz/ComfyUI-SeedVR2_VideoUpscaler.git" ${COMFYUI_SEEDVR2_DIR} \
-	# && mkdir -p ${COMFYUI_FLORENCE2_DIR} \
+		# && mkdir -p ${COMFYUI_FLORENCE2_DIR} \
 	# 	&& git clone --branch main --single-branch "https://github.com/kijai/ComfyUI-Florence2.git" ${COMFYUI_FLORENCE2_DIR} \
 	# && mkdir -p ${COMFYUI_TENSOROPS_DIR} \
 	# 	&& git clone --branch main --single-branch "https://github.com/un-seen/comfyui-tensorops.git" ${COMFYUI_TENSOROPS_DIR} \
@@ -61,6 +61,9 @@ RUN set -e \
 	&& pip install -r "${COMFYUI_MEMORY_CLEANUP_DIR}/requirements.txt" \
 	### Workflow
 	&& pip install -r "${COMFYUI_SEEDVR2_DIR}/requirements.txt" \
+		# && pip install --upgrade \
+		# 	diffusers \
+		# 	transformers \
 	# && pip install -r "${COMFYUI_FLORENCE2_DIR}/requirements.txt" \
 	# && pip install -r "${COMFYUI_TENSOROPS_DIR}/requirements.txt" \
     # Felesleges fájlok agresszív törlése a rétegből
