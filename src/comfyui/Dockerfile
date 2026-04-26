@@ -61,9 +61,6 @@ RUN set -e \
 	&& pip install -r "${COMFYUI_MEMORY_CLEANUP_DIR}/requirements.txt" \
 	### Workflow
 	&& pip install -r "${COMFYUI_SEEDVR2_DIR}/requirements.txt" \
-		# && pip install --upgrade \
-		# 	diffusers \
-		# 	transformers \
 	# && pip install -r "${COMFYUI_FLORENCE2_DIR}/requirements.txt" \
 	# && pip install -r "${COMFYUI_TENSOROPS_DIR}/requirements.txt" \
     # Felesleges fájlok agresszív törlése a rétegből
