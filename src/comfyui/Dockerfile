@@ -50,7 +50,7 @@ RUN set -e \
 		torch \
 		torchaudio \
 		torchvision \
-    		--index-url "https://download.pytorch.org/whl/cu130" \
+    		--extra-index-url "https://download.pytorch.org/whl/cu130" \
 			--prefer-binary \
     && pip install --upgrade \
         xformers \
@@ -76,4 +76,4 @@ COPY docker-entrypoint.sh /usr/local/bin/
 ENTRYPOINT ["docker-entrypoint.sh"]
 
 # https://github.com/comfyanonymous/ComfyUI/blob/master/comfy/cli_args.py
-CMD ["python3", "./main.py", "--listen", "--preview-method", "auto", "--cache-none"]
+CMD ["python3", "./main.py", "--listen", "--preview-method", "auto", "--cache-none", "--enable-manager"]
