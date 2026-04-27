@@ -19,6 +19,10 @@ ENV PYTHONDONTWRITEBYTECODE=1
 ENV PIP_ROOT_USER_ACTION=ignore
 ENV PIP_NO_CACHE_DIR=1
 
+# VIRTUAL ENV beállítása
+ENV VIRTUAL_ENV="${COMFYUI_DIR}/venv"
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+
 RUN mkdir -p ${COMFYUI_DIR}
 WORKDIR ${COMFYUI_DIR}
 
@@ -45,6 +49,9 @@ RUN set -e \
 	# 	&& git clone --branch main --single-branch "https://github.com/kijai/ComfyUI-Florence2.git" ${COMFYUI_FLORENCE2_DIR} \
 	# && mkdir -p ${COMFYUI_TENSOROPS_DIR} \
 	# 	&& git clone --branch main --single-branch "https://github.com/un-seen/comfyui-tensorops.git" ${COMFYUI_TENSOROPS_DIR} \
+    ### Python venv létrehozása
+    && python3 -m venv ${VIRTUAL_ENV} \
+    ### Csomagok telepítése a venv-be
 	&& pip install --upgrade pip \
     && pip install --upgrade \
 		torch \
