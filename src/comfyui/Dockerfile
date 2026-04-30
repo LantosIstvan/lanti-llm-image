@@ -90,7 +90,7 @@ RUN set -e \
             --index-url "https://download.pytorch.org/whl/cu130" \
             --prefer-binary \
     && pip install -r "${COMFYUI_DIR}/requirements.txt" \
-		&& pip install  --upgrade \
+		&& pip install --upgrade \
 			matrix-nio \
 	&& pip install -r "${COMFYUI_DIR}/manager_requirements.txt" \
     # && pip install -r "${COMFYUI_MANAGER_DIR}/requirements.txt" \
