@@ -9,7 +9,7 @@ ARG GID=1000
 
 ARG COMFYUI_DIR="/usr/src/ComfyUI"
 # ARG COMFYUI_MANAGER_DIR="${COMFYUI_DIR}/custom_nodes/comfyui-manager"
-ARG COMFYUI_MEMORY_CLEANUP_DIR="${COMFYUI_DIR}/custom_nodes/comfyui-memory-cleanup"
+# ARG COMFYUI_MEMORY_CLEANUP_DIR="${COMFYUI_DIR}/custom_nodes/comfyui-memory-cleanup"
 ### Workflow
 # ARG COMFYUI_SEEDVR2_DIR="${COMFYUI_DIR}/custom_nodes/seedvr2_videoupscaler"
 # ARG COMFYUI_FLORENCE2_DIR="${COMFYUI_DIR}/custom_nodes/comfyui-florence2"
@@ -66,8 +66,8 @@ RUN set -e \
     && git clone --branch master --single-branch "https://github.com/comfyanonymous/ComfyUI.git" ${COMFYUI_DIR} \
     # && mkdir -p ${COMFYUI_MANAGER_DIR} \
     #     && git clone --branch main --single-branch "https://github.com/Comfy-Org/ComfyUI-Manager.git" ${COMFYUI_MANAGER_DIR} \
-    && mkdir -p ${COMFYUI_MEMORY_CLEANUP_DIR} \
-        && git clone --branch main --single-branch "https://github.com/LAOGOU-666/Comfyui-Memory_Cleanup.git" ${COMFYUI_MEMORY_CLEANUP_DIR} \
+    # && mkdir -p ${COMFYUI_MEMORY_CLEANUP_DIR} \
+    #     && git clone --branch main --single-branch "https://github.com/LAOGOU-666/Comfyui-Memory_Cleanup.git" ${COMFYUI_MEMORY_CLEANUP_DIR} \
     ### Workflow
     # && mkdir -p ${COMFYUI_SEEDVR2_DIR} \
     #     && git clone --branch main --single-branch "https://github.com/numz/ComfyUI-SeedVR2_VideoUpscaler.git" ${COMFYUI_SEEDVR2_DIR} \
@@ -90,9 +90,11 @@ RUN set -e \
             --index-url "https://download.pytorch.org/whl/cu130" \
             --prefer-binary \
     && pip install -r "${COMFYUI_DIR}/requirements.txt" \
+		&& pip install  --upgrade \
+			matrix-nio \
 	&& pip install -r "${COMFYUI_DIR}/manager_requirements.txt" \
     # && pip install -r "${COMFYUI_MANAGER_DIR}/requirements.txt" \
-    && pip install -r "${COMFYUI_MEMORY_CLEANUP_DIR}/requirements.txt" \
+    # && pip install -r "${COMFYUI_MEMORY_CLEANUP_DIR}/requirements.txt" \
     ### Workflow
     # && pip install -r "${COMFYUI_SEEDVR2_DIR}/requirements.txt" \
 	# && pip install -r "${COMFYUI_FLORENCE2_DIR}/requirements.txt" \
