@@ -12,7 +12,7 @@ networks:
 #     environment: "HUGGING_FACE_HUB_TOKEN"
 
 volumes:
-  comfyui_seedvr2:
+  # comfyui_seedvr2:
   comfyui_user:
   # sd_models:
   # sd_repositories:
@@ -86,7 +86,7 @@ services:
       # - ./models/SEEDVR2:${COMFYUI_DIR}/models/SEEDVR2:rw
       - ./outputs:${COMFYUI_DIR}/output
       - comfyui_user:${COMFYUI_DIR}/user
-      - comfyui_seedvr2:${COMFYUI_DIR}/models/SEEDVR2
+      # - comfyui_seedvr2:${COMFYUI_DIR}/models/SEEDVR2
     ports:
       - 8188:8188
     <<: [ *common-gpu ]
