@@ -8,10 +8,10 @@ ARG UID=1000
 ARG GID=1000
 
 ARG COMFYUI_DIR="/usr/src/ComfyUI"
-ARG COMFYUI_MANAGER_DIR="${COMFYUI_DIR}/custom_nodes/comfyui-manager"
+# ARG COMFYUI_MANAGER_DIR="${COMFYUI_DIR}/custom_nodes/comfyui-manager"
 ARG COMFYUI_MEMORY_CLEANUP_DIR="${COMFYUI_DIR}/custom_nodes/comfyui-memory-cleanup"
 ### Workflow
-ARG COMFYUI_SEEDVR2_DIR="${COMFYUI_DIR}/custom_nodes/seedvr2_videoupscaler"
+# ARG COMFYUI_SEEDVR2_DIR="${COMFYUI_DIR}/custom_nodes/seedvr2_videoupscaler"
 # ARG COMFYUI_FLORENCE2_DIR="${COMFYUI_DIR}/custom_nodes/comfyui-florence2"
 # ARG COMFYUI_TENSOROPS_DIR="${COMFYUI_DIR}/custom_nodes/comfyui-tensorops"
 
@@ -64,13 +64,13 @@ WORKDIR ${COMFYUI_DIR}
 # USER LÉPÉSEK: Forráskód letöltése, VENV létrehozása és csomagok telepítése a felhasználó nevében
 RUN set -e \
     && git clone --branch master --single-branch "https://github.com/comfyanonymous/ComfyUI.git" ${COMFYUI_DIR} \
-    && mkdir -p ${COMFYUI_MANAGER_DIR} \
-        && git clone --branch main --single-branch "https://github.com/Comfy-Org/ComfyUI-Manager.git" ${COMFYUI_MANAGER_DIR} \
+    # && mkdir -p ${COMFYUI_MANAGER_DIR} \
+    #     && git clone --branch main --single-branch "https://github.com/Comfy-Org/ComfyUI-Manager.git" ${COMFYUI_MANAGER_DIR} \
     && mkdir -p ${COMFYUI_MEMORY_CLEANUP_DIR} \
         && git clone --branch main --single-branch "https://github.com/LAOGOU-666/Comfyui-Memory_Cleanup.git" ${COMFYUI_MEMORY_CLEANUP_DIR} \
     ### Workflow
-    && mkdir -p ${COMFYUI_SEEDVR2_DIR} \
-        && git clone --branch main --single-branch "https://github.com/numz/ComfyUI-SeedVR2_VideoUpscaler.git" ${COMFYUI_SEEDVR2_DIR} \
+    # && mkdir -p ${COMFYUI_SEEDVR2_DIR} \
+    #     && git clone --branch main --single-branch "https://github.com/numz/ComfyUI-SeedVR2_VideoUpscaler.git" ${COMFYUI_SEEDVR2_DIR} \
 	# && mkdir -p ${COMFYUI_FLORENCE2_DIR} \
 	# 	&& git clone --branch main --single-branch "https://github.com/kijai/ComfyUI-Florence2.git" ${COMFYUI_FLORENCE2_DIR} \
 	# && mkdir -p ${COMFYUI_TENSOROPS_DIR} \
@@ -90,11 +90,11 @@ RUN set -e \
             --index-url "https://download.pytorch.org/whl/cu130" \
             --prefer-binary \
     && pip install -r "${COMFYUI_DIR}/requirements.txt" \
-	# && pip install -r "${COMFYUI_DIR}/manager_requirements.txt" \
-    && pip install -r "${COMFYUI_MANAGER_DIR}/requirements.txt" \
+	&& pip install -r "${COMFYUI_DIR}/manager_requirements.txt" \
+    # && pip install -r "${COMFYUI_MANAGER_DIR}/requirements.txt" \
     && pip install -r "${COMFYUI_MEMORY_CLEANUP_DIR}/requirements.txt" \
     ### Workflow
-    && pip install -r "${COMFYUI_SEEDVR2_DIR}/requirements.txt" \
+    # && pip install -r "${COMFYUI_SEEDVR2_DIR}/requirements.txt" \
 	# && pip install -r "${COMFYUI_FLORENCE2_DIR}/requirements.txt" \
 	# && pip install -r "${COMFYUI_TENSOROPS_DIR}/requirements.txt" \
     # Felesleges fájlok agresszív törlése a rétegből
@@ -103,5 +103,5 @@ RUN set -e \
 ENTRYPOINT ["docker-entrypoint.sh"]
 
 # A venv miatt a rendszer automatikusan a környezeti python3-at fogja használni
-# CMD ["python3", "./main.py", "--listen", "--preview-method", "auto", "--cache-none", "--enable-manager"]
-CMD ["python3", "./main.py", "--listen", "--preview-method", "auto", "--cache-none"]
+CMD ["python3", "./main.py", "--listen", "--preview-method", "auto", "--cache-none", "--enable-manager"]
+# CMD ["python3", "./main.py", "--listen", "--preview-method", "auto", "--cache-none"]
