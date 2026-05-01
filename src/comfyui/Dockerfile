@@ -12,7 +12,7 @@ ARG GID=1000
 ARG COMFYUI_DIR="/usr/src/ComfyUI"
 # ARG COMFYUI_MEMORY_CLEANUP_DIR="${COMFYUI_DIR}/custom_nodes/comfyui-memory-cleanup"
 ### Workflow
-ARG COMFYUI_SEEDVR2_DIR="${COMFYUI_DIR}/custom_nodes/seedvr2_videoupscaler"
+# ARG COMFYUI_SEEDVR2_DIR="${COMFYUI_DIR}/custom_nodes/seedvr2_videoupscaler"
 # ARG COMFYUI_FLORENCE2_DIR="${COMFYUI_DIR}/custom_nodes/comfyui-florence2"
 # ARG COMFYUI_TENSOROPS_DIR="${COMFYUI_DIR}/custom_nodes/comfyui-tensorops"
 
@@ -77,8 +77,8 @@ RUN set -e \
 	# && mkdir -p ${COMFYUI_MEMORY_CLEANUP_DIR} \
 	#     && git clone --branch main --single-branch "https://github.com/LAOGOU-666/Comfyui-Memory_Cleanup.git" ${COMFYUI_MEMORY_CLEANUP_DIR} \
 	### Workflow
-	&& mkdir -p ${COMFYUI_SEEDVR2_DIR} \
-		&& git clone --branch main --single-branch "https://github.com/numz/ComfyUI-SeedVR2_VideoUpscaler.git" ${COMFYUI_SEEDVR2_DIR} \
+	# && mkdir -p ${COMFYUI_SEEDVR2_DIR} \
+	# 	&& git clone --branch main --single-branch "https://github.com/numz/ComfyUI-SeedVR2_VideoUpscaler.git" ${COMFYUI_SEEDVR2_DIR} \
 	# && mkdir -p ${COMFYUI_FLORENCE2_DIR} \
 	# 	&& git clone --branch main --single-branch "https://github.com/kijai/ComfyUI-Florence2.git" ${COMFYUI_FLORENCE2_DIR} \
 	# && mkdir -p ${COMFYUI_TENSOROPS_DIR} \
@@ -103,14 +103,14 @@ RUN set -e \
 	&& pip install -r "${COMFYUI_DIR}/manager_requirements.txt" \
 	# && pip install -r "${COMFYUI_MEMORY_CLEANUP_DIR}/requirements.txt" \
 	### Workflow
-	&& pip install -r "${COMFYUI_SEEDVR2_DIR}/requirements.txt" \
+	# && pip install -r "${COMFYUI_SEEDVR2_DIR}/requirements.txt" \
 	# && pip install -r "${COMFYUI_FLORENCE2_DIR}/requirements.txt" \
 	# && pip install -r "${COMFYUI_TENSOROPS_DIR}/requirements.txt" \
 	# Felesleges fájlok agresszív törlése a rétegből
 	&& find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
 
 # Helyi custom node-ok (pl. transformers flash_attn patch) bemásolása
-# COPY --chown=comfyuser:comfyuser custom_nodes/ ${COMFYUI_DIR}/custom_nodes/
+COPY --chown=comfyuser:comfyuser custom_nodes/ ${COMFYUI_DIR}/custom_nodes/
 
 ENTRYPOINT ["docker-entrypoint.sh"]
 
