@@ -13,23 +13,24 @@ CONFIG_FILE="${MANAGER_DIR}/config.ini"
 
 mkdir -p "$MANAGER_DIR"
 
-# Ha még nem létezik a config fájl, létrehozzuk
-if[ ! -f "$CONFIG_FILE" ]; then
-cat <<EOF > "$CONFIG_FILE"
+# A szóköz az "if" és a "[" között kritikus a POSIX shellben
+if [ ! -f "$CONFIG_FILE" ]; then
+    cat <<EOF > "$CONFIG_FILE"
 [default]
 security_level = weak
 network_mode = personal_cloud
 EOF
 else
     # Ha már létezik, felülírjuk a két kritikus értéket
-    if grep -q "^\s*security_level" "$CONFIG_FILE"; then
-        sed -i 's/^\s*security_level.*/security_level = weak/' "$CONFIG_FILE"
+    # A \s helyett [[:space:]] a POSIX szabványos megoldás whitespace-re
+    if grep -q "^[[:space:]]*security_level" "$CONFIG_FILE"; then
+        sed -i 's/^[[:space:]]*security_level.*/security_level = weak/' "$CONFIG_FILE"
     else
         echo "security_level = weak" >> "$CONFIG_FILE"
     fi
 
-    if grep -q "^\s*network_mode" "$CONFIG_FILE"; then
-        sed -i 's/^\s*network_mode.*/network_mode = personal_cloud/' "$CONFIG_FILE"
+    if grep -q "^[[:space:]]*network_mode" "$CONFIG_FILE"; then
+        sed -i 's/^[[:space:]]*network_mode.*/network_mode = personal_cloud/' "$CONFIG_FILE"
     else
         echo "network_mode = personal_cloud" >> "$CONFIG_FILE"
     fi
