@@ -37,8 +37,8 @@ x-common-logging: &common-logging
 
 services:
 
-  cache_python313:
-    image: python:${VERSION_PYTHON313}
+  cache_python:
+    image: python:${VERSION_PYTHON312}
     profiles:
       - cache
 
@@ -70,7 +70,7 @@ services:
       context: ./src/comfyui
       args:
         COMFYUI_DIR: ${COMFYUI_DIR}
-        VERSION_PYTHON: ${VERSION_PYTHON313}
+        VERSION_PYTHON: ${VERSION_PYTHON312}
         UID: ${UID}
         GID: ${GID}
     environment:

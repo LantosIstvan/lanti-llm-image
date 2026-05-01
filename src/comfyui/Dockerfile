@@ -20,7 +20,7 @@ ENV NODE_ENV="production"
 ENV PYTHONDONTWRITEBYTECODE=1
 
 # PIP globális beállításai
-ENV PIP_ROOT_USER_ACTION=ignore
+# ENV PIP_ROOT_USER_ACTION=ignore
 ENV PIP_NO_CACHE_DIR=1
 
 # VIRTUAL ENV beállítása (a PATH frissítésével minden python és pip parancs ide fog mutatni)
