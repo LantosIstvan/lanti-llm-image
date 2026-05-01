@@ -36,6 +36,22 @@ else
     fi
 fi
 
+echo "Applying patch for transformers>=5.5.0 flash_attn bug..."
+PATCH_DIR="/usr/src/ComfyUI/custom_nodes/00_patch_transformers"
+mkdir -p "$PATCH_DIR"
+cat << 'EOF' > "$PATCH_DIR/__init__.py"
+# Patch for transformers>=5.5.0 bug: 'flash_attn' missing from PACKAGE_DISTRIBUTION_MAPPING
+try:
+    from transformers.utils.import_utils import PACKAGE_DISTRIBUTION_MAPPING
+    if "flash_attn" not in PACKAGE_DISTRIBUTION_MAPPING:
+        PACKAGE_DISTRIBUTION_MAPPING["flash_attn"] =["flash_attn", "flash-attn"]
+except Exception:
+    pass
+
+NODE_CLASS_MAPPINGS = {}
+EOF
+sudo chown -R comfyuser:comfyuser "$PATCH_DIR" 2>/dev/null || true
+
 # Run command with python3 if the first argument contains a "-" or is not a system command. The last
 # part inside the "{}" is a workaround for the following bug in ash/dash:
 # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=874264
