@@ -92,7 +92,6 @@ RUN set -e \
     && pip install -r "${COMFYUI_DIR}/requirements.txt" \
 		&& pip install --upgrade \
 			matrix-nio \
-			transformers \
 	&& pip install -r "${COMFYUI_DIR}/manager_requirements.txt" \
     # && pip install -r "${COMFYUI_MANAGER_DIR}/requirements.txt" \
     # && pip install -r "${COMFYUI_MEMORY_CLEANUP_DIR}/requirements.txt" \
