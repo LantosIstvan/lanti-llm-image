@@ -109,9 +109,6 @@ RUN set -e \
 	# Felesleges fájlok agresszív törlése a rétegből
 	&& find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
 
-# Helyi custom node-ok (pl. transformers flash_attn patch) bemásolása
-COPY --chown=comfyuser:comfyuser custom_nodes/ ${COMFYUI_DIR}/custom_nodes/
-
 ENTRYPOINT ["docker-entrypoint.sh"]
 
 # A venv miatt a rendszer automatikusan a környezeti python3-at fogja használni
